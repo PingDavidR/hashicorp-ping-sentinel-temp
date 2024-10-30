@@ -64,44 +64,44 @@ resource "local_file" "env_config" {
   filename = "./sample-app/global.js"
 }
 
-output "env_config" {
-  value = local_file.env_config.content
-}
+# output "env_config" {
+#   value = local_file.env_config.content
+# }
 
 locals {
   filenames = join("", [for f in fileset(path.module, "./sample-app/**") : f != "sample-app/global.js" ? f : ""])
 }
 
-# Define a Docker image resource
-resource "docker_image" "registration" {
-  name = "simple-registration:latest"
-  build {
-    # Path to the directory containing Dockerfile and other necessary files
-    context = "./sample-app"
-  }
-  triggers = {
-    dir_sha1   = sha1(join("", [for f in fileset(path.module, "./sample-app/**") : f != "sample-app/global.js" ? filesha1(f) : ""]))
-    env_config = sha1(local_file.env_config.content)
-  }
-  force_remove = true
-  depends_on   = [local_file.env_config]
-}
+# # Define a Docker image resource
+# resource "docker_image" "registration" {
+#   name = "simple-registration:latest"
+#   build {
+#     # Path to the directory containing Dockerfile and other necessary files
+#     context = "./sample-app"
+#   }
+#   triggers = {
+#     dir_sha1   = sha1(join("", [for f in fileset(path.module, "./sample-app/**") : f != "sample-app/global.js" ? filesha1(f) : ""]))
+#     env_config = sha1(local_file.env_config.content)
+#   }
+#   force_remove = true
+#   depends_on   = [local_file.env_config]
+# }
 
-# Define a Docker container resource
-resource "docker_container" "registration" {
-  name         = "simple-registration"
-  image        = docker_image.registration.image_id
-  network_mode = "bridge"
-  ports {
-    internal = 8443
-    external = 8443
-  }
-  ports {
-    internal = 8080
-    external = 8080
-  }
-  rm = true
-}
+# # Define a Docker container resource
+# resource "docker_container" "registration" {
+#   name         = "simple-registration"
+#   image        = docker_image.registration.image_id
+#   network_mode = "bridge"
+#   ports {
+#     internal = 8443
+#     external = 8443
+#   }
+#   ports {
+#     internal = 8080
+#     external = 8080
+#   }
+#   rm = true
+# }
 
 output "dir_sha1" {
   value = docker_image.registration.triggers.dir_sha1
