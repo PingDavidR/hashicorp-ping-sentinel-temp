@@ -103,9 +103,9 @@ locals {
 #   rm = true
 # }
 
-output "dir_sha1" {
-  value = docker_image.registration.triggers.dir_sha1
-}
+# output "dir_sha1" {
+#   value = docker_image.registration.triggers.dir_sha1
+# }
 
 output "filenames" {
   value = local.filenames
